@@ -1,0 +1,23 @@
+{
+  "acceleration": 0.5,
+  "retardation": 1.5,
+  "max_speed": 35,
+  "start_time": "08:35",
+  "day_type": "helg",
+  "stops": [
+    {"name": "Arby", "distance": 0},
+    {"name": "Bedinge", "distance": 3.57},
+    {"name": "Cebro", "distance": 6.38},
+    {"name": "Degum", "distance": 8.67},
+    {"name": "Ekö", "distance": 12.80},
+    {"name": "Floda", "distance": 18.24},
+    {"name": "Guldö", "distance": 24.59},
+    {"name": "Håsta", "distance": 29.42},
+    {"name": "Iby", "distance": 30.73},
+    {"name": "Jituna", "distance": 34.06},
+    {"name": "Kåvik", "distance": 36.95}
+  ],
+  "line_name": "VGV",
+  "direction": "Arby-Kåvik",
+  "wait_time_end_station": 10
+}
