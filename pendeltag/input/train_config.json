@@ -2,7 +2,7 @@
   "acceleration": 0.5,
   "retardation": 1.5,
   "max_speed": 35,
-  "start_time": "08:35",
+  "start_time": [{"hour": 8, "minute": 35}],
   "day_type": "helg",
   "stops": [
     {"name": "Arby", "distance": 0},
@@ -18,6 +18,5 @@
     {"name": "Kåvik", "distance": 36.95}
   ],
   "line_name": "VGV",
-  "direction": "Arby-Kåvik",
   "wait_time_end_station": 10
 }

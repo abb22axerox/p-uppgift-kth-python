@@ -7,4 +7,4 @@ def read_train_config():
         return json.load(data)
 
 data = read_train_config()
-print(data['stops'][2])
+print(data)
