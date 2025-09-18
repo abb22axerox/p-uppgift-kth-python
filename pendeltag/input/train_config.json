@@ -2,7 +2,7 @@
   "acceleration": 0.5,
   "retardation": 1.5,
   "max_speed": 35,
-  "start_time": [{"hour": 8, "minute": 35}],
+  "start_time": {"hour": 8, "minute": 35},
   "day_type": "helg",
   "stops": [
     {"name": "Arby", "distance": 0},
