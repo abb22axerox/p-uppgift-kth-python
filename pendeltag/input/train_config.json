@@ -2,8 +2,8 @@
   "acceleration": 0.5,
   "retardation": 1.5,
   "max_speed": 35,
-  "start_time": {"hour": 8, "minute": 35},
-  "day_type": "helg",
+  "start_time": {"hour": 5, "minute": 7},
+  "day_type": "vardag",
   "stops": [
     {"name": "Arby", "distance": 0},
     {"name": "Bedinge", "distance": 3.57},
