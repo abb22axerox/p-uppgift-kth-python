@@ -12,7 +12,7 @@ class Timetable:
         self.day_type = day_type
         self.timetable = dict()
 
-    def create_timetable(self, start_time, distance_deltas, wait_time):
+    def create_timetable(self, start_time, distance_deltas, wait_time, train_interval):
         # Helper functions to convert between time dict and seconds (24-hour format)
         def time_to_seconds(t):
             return int(t["hour"]) * 3600 + int(t["minute"]) * 60
@@ -55,10 +55,9 @@ class Timetable:
         
         elif self.day_type == 'vardag':
             train_amount = 3
-            base_interval = 5 * 60  # 5 minutes (in seconds)
 
             # Create independent starting times for each train.
-            train_start_secs = [time_to_seconds(start_time) + i * base_interval for i in range(train_amount)]
+            train_start_secs = [time_to_seconds(start_time) + i * train_interval for i in range(train_amount)]
             
             # Each train keeps its own station order and distance deltas. (list of lists)
             train_stations = [self.stations.copy() for _ in range(train_amount)]
@@ -66,8 +65,6 @@ class Timetable:
             
             # Running flag for each train (continue simulating until its outbound is after midnight)
             running = [True] * train_amount
-
-            print('vardag simulation for 3 trains')
             
             # Run the simulation until all trains have finished their schedules.
             while any(running):
