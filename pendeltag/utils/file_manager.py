@@ -27,7 +27,3 @@ def save_settings(path, new_conf):
     # Spara uppdaterad config
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2)
-
-def save_timetable(path, timetable_dict):
-    with open(path, 'w') as f:
-        json.dump(timetable_dict, f, indent=4)

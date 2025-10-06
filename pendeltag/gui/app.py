@@ -2,20 +2,19 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-# Lägg till sökväg till ditt projekt (anpassa vid behov)
 sys.path.insert(0, '/Users/axelroxenborg/Documents/Programmering/p-uppgift-kth-python/pendeltag')
 
 from utils import file_manager as FM
+from utils import compute_save_timetable as CST
 
 TRAIN_CONFIG_PATH = 'pendeltag/input/train_config.json'
-TIMETABLE_PATH = 'pendeltag/output/timetable.json'
-
 
 class TimetableApp:
-    def __init__(self, root, train_config, timetable):
+    def __init__(self, root, train_config):
         self.root = root
+        self.train_config = train_config
         self.root.title(f"Tidtabell för linje: {train_config.get('line_name', '')}")
-        self.root.geometry("1000x800")
+        self.root.geometry("1400x800")
 
         # Gör root-fönstret flexibelt
         self.root.grid_rowconfigure(0, weight=1)
@@ -36,17 +35,17 @@ class TimetableApp:
 
         # Container för "Ladda om"-knappen
         self.reload_frame = tk.Frame(self.tab_tidtabell)
-        self.reload_frame.grid(row=0, column=0, sticky='w', padx=10, pady=(10, 0))
+        self.reload_frame.grid(row=0, column=0, sticky='e', padx=10, pady=(10, 0))
 
-        reload_button = tk.Button(self.reload_frame, text="🔄 Ladda om tidtabell", command=self._reload_timetable)
+        reload_button = tk.Button(self.reload_frame, text="Ladda om tidtabell", command=self._reload_timetable)
         reload_button.pack()
 
         # Frame för trädet (tabellen) - hålls separat så vi inte råkar radera reload-knappen
         self.tree_frame = tk.Frame(self.tab_tidtabell)
         self.tree_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
-        # Skapa tabell (fylls med timetable)
-        self._create_tidtabell_tab(timetable)
+        # Ladda om i UI:et direkt
+        self._reload_timetable()
 
         # === Flik: Inställningar ===
         self.tab_inställningar = ttk.Frame(self.notebook)
@@ -57,6 +56,7 @@ class TimetableApp:
         """Skapar (eller återskapar) Treeview i self.tree_frame baserat på timetable.
         Denna funktion tar ansvar för att rensa tidigare innehåll i self.tree_frame.
         """
+
         # Rensa tidigare widgets i tree_frame
         for w in self.tree_frame.winfo_children():
             w.destroy()
@@ -82,7 +82,7 @@ class TimetableApp:
         # Style
         style = ttk.Style()
         style.configure("Treeview", rowheight=25)
-        style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
+        style.configure("Treeview.Heading", font=("Arial", 14, "bold"))
         self.tree.tag_configure('evenrow', background='white')
         self.tree.tag_configure('oddrow', background='lightblue')
 
@@ -106,14 +106,16 @@ class TimetableApp:
 
     def _reload_timetable(self):
         try:
-            timetable = FM.read_file(TIMETABLE_PATH)
+            computed_timetable = CST.compute_timetable(self.train_config)
+
         except Exception as e:
             messagebox.showerror("Fel vid inläsning", f"Kunde inte läsa tidtabell: {e}")
             return
 
         # Uppdatera tabellen i tree_frame (rensas i _create_tidtabell_tab)
         try:
-            self._create_tidtabell_tab(timetable)
+            self._create_tidtabell_tab(computed_timetable)
+
         except Exception as e:
             messagebox.showerror("Fel vid uppdatering", f"Kunde inte uppdatera tabell: {e}")
 
@@ -125,18 +127,6 @@ class TimetableApp:
             entry.insert(0, str(default_value))
             entry.pack()
             return entry
-
-        # Om train_config saknas, förse med standardvärden
-        if not train_config:
-            train_config = {
-                "acceleration": 0.5,
-                "retardation": 0.5,
-                "max_speed": 80,
-                "start_time": {"hour": 6, "minute": 0},
-                "day_type": "vardag",
-                "wait_time_end_station": 5,
-                "train_interval": 3600
-            }
 
         self.acc_entry = create_labeled_entry(self.tab_inställningar, "Acceleration (m/s²):", train_config.get("acceleration", 0.5))
         self.ret_entry = create_labeled_entry(self.tab_inställningar, "Retardation (m/s²):", train_config.get("retardation", 0.5))
@@ -156,15 +146,16 @@ class TimetableApp:
         # Visa intervall i minuter i entryn
         self.interval_entry = create_labeled_entry(self.tab_inställningar, "Tågintervall (min):", train_config.get("train_interval", 3600) // 60)
 
-        save_button = tk.Button(self.tab_inställningar, text="Spara inställningar", command=self._save_settings)
+        save_button = tk.Button(self.tab_inställningar, text="Spara inställningar", command=lambda: self.root.after(100, self._save_settings))
         save_button.pack(pady=15)
-
-        self.status_label = tk.Label(self.tab_inställningar, text="")
-        self.status_label.pack()
 
     def _save_settings(self):
         try:
-            new_config = {
+            # Börja med en kopia av befintlig config
+            new_config = self.train_config.copy()
+
+            # Uppdatera de relevanta fälten
+            new_config.update({
                 "acceleration": float(self.acc_entry.get()),
                 "retardation": float(self.ret_entry.get()),
                 "max_speed": int(self.vmax_entry.get()),
@@ -175,37 +166,21 @@ class TimetableApp:
                 "day_type": self.day_var.get(),
                 "wait_time_end_station": int(self.wait_entry.get()),
                 "train_interval": int(self.interval_entry.get()) * 60
-            }
+            })
 
+
+            # Spara konfiguration till fil
             FM.save_settings(TRAIN_CONFIG_PATH, new_config)
 
-            # Ladda om i UI:et direkt
-            self._reload_timetable()
+            # Uppdatera interna konfigurationen
+            self.train_config = new_config
 
-            self.status_label.config(text="Inställningar sparade!")
+            # Visa popup först
+            messagebox.showinfo("Sparat", "Inställningarna har sparats.")
 
         except ValueError:
-            self.status_label.config(text="Fel: Kontrollera att alla fält innehåller giltiga siffror.")
+            messagebox.showerror("Fel", "Fel: Kontrollera att alla fält innehåller giltiga siffror.")
         except Exception as e:
-            # Visa fel om FM.save_settings t.ex. kastar
             messagebox.showerror("Fel vid sparning", f"Kunde inte spara inställningar: {e}")
 
 
-
-if __name__ == '__main__':
-    # Försök läsa konfig och tidtabell från fil, annars använd tomma/standardvärden
-    try:
-        train_config = FM.read_file(TRAIN_CONFIG_PATH) or {}
-    except Exception as e:
-        print(f"Kunde inte läsa train_config: {e}")
-        train_config = {}
-
-    try:
-        timetable = FM.read_file(TIMETABLE_PATH) or {}
-    except Exception as e:
-        print(f"Kunde inte läsa timetable: {e}")
-        timetable = {}
-
-    root = tk.Tk()
-    app = TimetableApp(root, train_config, timetable)
-    root.mainloop()

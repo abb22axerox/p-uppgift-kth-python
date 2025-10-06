@@ -3,10 +3,10 @@
   "retardation": 1.5,
   "max_speed": 35,
   "start_time": {
-    "hour": 6,
-    "minute": 8
+    "hour": 5,
+    "minute": 7
   },
-  "day_type": "helg",
+  "day_type": "vardag",
   "stops": [
     {
       "name": "Arby",
@@ -53,7 +53,7 @@
       "distance": 36.95
     }
   ],
-  "line_name": "VGV",
+  "line_name": "Arby-K\u00e5vik",
   "wait_time_end_station": 10,
   "train_interval": 300
 }
