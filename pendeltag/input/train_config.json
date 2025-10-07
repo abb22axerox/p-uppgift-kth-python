@@ -4,7 +4,7 @@
   "max_speed": 35,
   "start_time": {
     "hour": 5,
-    "minute": 7
+    "minute": 6
   },
   "day_type": "vardag",
   "stops": [

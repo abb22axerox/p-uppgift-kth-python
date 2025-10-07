@@ -11,5 +11,3 @@ def format_times(times, start_time):
         formatted_times.append({"hour": hour, "minute": minute})
 
     return formatted_times
-
-# def create_timetable(departure_times, )
