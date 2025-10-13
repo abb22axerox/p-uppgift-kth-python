@@ -72,9 +72,6 @@ Detta projekt är ett GUI-baserat Pythonprogram som genererar och visar tidtabel
 - `calculate_time_deltas(...)` – Returnerar restider mellan stopp.
 - `calculate_departure_for_stations(...)` – Returnerar tider för varje station.
 
-### `time_utils.py`
-- `format_times(times, start_time)` – Konverterar tider i sekunder till dict med timmar och minuter.
-
 ### `file_manager.py`
 - `read_file(path)` – Läser JSON-fil.
 - `save_settings(path, new_conf)` – Sparar konfigurationsfil med backup.
