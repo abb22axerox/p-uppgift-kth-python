@@ -150,7 +150,7 @@ class TimetableApp:
 
         self.wait_entry = create_labeled_entry(self.tab_inställningar, "Väntetid vid slutstation (min):", train_config.get("wait_time_end_station", 5))
         # Visa intervall i minuter i entryn
-        self.interval_entry = create_labeled_entry(self.tab_inställningar, "Tågintervall (min):", train_config.get("train_interval", 3600) // 60)
+        self.interval_entry = create_labeled_entry(self.tab_inställningar, "Tågintervall (min) (vardag):", train_config.get("train_interval", 3600) // 60)
         
         # Ny entry för antal tåg i trafik (vardag)
         self.vardag_train_amount_entry = create_labeled_entry(self.tab_inställningar, "Antal tåg i trafik (vardag):", train_config.get("vardag_train_amount", 3))
