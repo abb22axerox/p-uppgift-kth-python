@@ -110,22 +110,21 @@ Detta projekt är ett GUI-baserat Pythonprogram som genererar och visar tidtabel
 ```
 pendeltag/
 │
-├── gui/
-│   └── app.py                  # GUI-klassen TimetableApp
+├── gui/ # Gränssnitt för GUI (användargränssnitt)
+│ └── app.py # Huvudfil för GUI-logik
 │
-├── classes/
-│   ├── timetable.py            # Klass för tidtabeller
-│   └── train.py                # Klass för tåg
+├── classes/ # Datamodeller och klasser
+│ ├── timetable.py # Klass för tidtabeller
+│ └── train.py # Klass för tåg och dess logik
 │
-├── input/
-│   └── train_config.json       # Konfiguration för tåg, tider och dagtyper
+├── input/ # Inmatningsdata och konfiguration
+│ └── train_config.json # JSON-konfigurationsfil för tåginformation
 │
-├── utils/
-│   ├── calculator.py           # Fysikaliska beräkningar
-│   ├── compute_save_timetable.py # Skapar tidtabell
-│   ├── file_manager.py         # Läser och sparar konfiguration
-│   └── time_utils.py           # Tidsomvandlingar
+├── utils/ # Hjälpfunktioner och verktyg
+│ ├── calculator.py # Allmänna beräkningsfunktioner
+│ ├── compute_save_timetable.py # Beräkning och sparning av tidtabeller
+│ └── file_manager.py # Funktioner för filhantering
 │
-├── main.py                     # Startpunkt för programmet
-└── README.md                   # Dokumentation och specifikation
+├── main.py # Applikationens startpunkt
+└── README.md # Dokumentation för projektet
 ```

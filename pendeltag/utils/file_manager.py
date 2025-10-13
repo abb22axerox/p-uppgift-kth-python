@@ -1,9 +1,10 @@
-# Functions to read and parse input files
+# Funktioner för att läsa och ändra filer
 
 import json
 import shutil
 
 def read_file(path):
+    # Läs in JSON-fil
     with open(path, 'r', encoding='utf-8') as data:
         return json.load(data)
     

@@ -1,3 +1,5 @@
+# Huvud-GUI för pendeltågstidtabell
+
 import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -11,6 +13,7 @@ TRAIN_CONFIG_PATH = 'pendeltag/input/train_config.json'
 
 class TimetableApp:
     def __init__(self, root, train_config):
+        # Initialisering av huvudfönster
         self.root = root
         self.train_config = train_config
         self.root.title(f"Tidtabell för linje: {train_config.get('line_name', '')}")
@@ -53,19 +56,17 @@ class TimetableApp:
         self._create_inställningar_tab(train_config)
 
     def _create_tidtabell_tab(self, timetable):
-        """Skapar (eller återskapar) Treeview i self.tree_frame baserat på timetable.
-        Denna funktion tar ansvar för att rensa tidigare innehåll i self.tree_frame.
-        """
-
         # Rensa tidigare widgets i tree_frame
         for w in self.tree_frame.winfo_children():
             w.destroy()
 
+        # Om ingen tidtabell finns, visa meddelande
         if not timetable:
             lbl = tk.Label(self.tree_frame, text="Ingen tidtabell hittades.")
             lbl.pack()
             return
 
+        # Extrahera stationsnamn för kolumner
         stations = list(timetable.keys())
 
         # Skapa Treeview
@@ -92,19 +93,21 @@ class TimetableApp:
         except ValueError:
             num_rows = 0
 
+        # Lägg in rader
         for i in range(num_rows):
             row = []
             for station in stations:
                 if i < len(timetable[station]):
                     t = timetable[station][i]
-                    # Förvänta att t har "hour" och "minute"
-                    row.append(f"{int(t['hour']):02d}:{int(t['minute']):02d}")
+                    # Förväntan att t har "train_id", "hour" och "minute"
+                    row.append(f"{int(t['train_id'])} | {int(t['hour']):02d}:{int(t['minute']):02d}")
                 else:
                     row.append('')
-            tag = 'evenrow' if i % 2 == 0 else 'oddrow'
+            tag = 'evenrow' if i % 2 == 0 else 'oddrow' # Växlande radfärg
             self.tree.insert('', 'end', values=row, tags=(tag,))
 
     def _reload_timetable(self):
+        # Rensa tidigare tabell i tree_frame
         try:
             computed_timetable = CST.compute_timetable(self.train_config)
 
@@ -120,6 +123,7 @@ class TimetableApp:
             messagebox.showerror("Fel vid uppdatering", f"Kunde inte uppdatera tabell: {e}")
 
     def _create_inställningar_tab(self, train_config):
+        # Skapa etiketter och inmatningsfält för varje inställning
         def create_labeled_entry(parent, label_text, default_value):
             label = tk.Label(parent, text=label_text)
             label.pack(pady=(10, 2))
@@ -127,11 +131,13 @@ class TimetableApp:
             entry.insert(0, str(default_value))
             entry.pack()
             return entry
-
+        
+        # Acceleration, retardation, maxhastighet
         self.acc_entry = create_labeled_entry(self.tab_inställningar, "Acceleration (m/s²):", train_config.get("acceleration", 0.5))
         self.ret_entry = create_labeled_entry(self.tab_inställningar, "Retardation (m/s²):", train_config.get("retardation", 0.5))
         self.vmax_entry = create_labeled_entry(self.tab_inställningar, "Maxhastighet (m/s):", train_config.get("max_speed", 80))
-
+        
+        # Starttid (timme och minut)
         self.start_hour_entry = create_labeled_entry(self.tab_inställningar, "Starttid - timme (0–23):", train_config.get("start_time", {}).get("hour", 6))
         self.start_minute_entry = create_labeled_entry(self.tab_inställningar, "Starttid - minut (0–59):", train_config.get("start_time", {}).get("minute", 0))
 
@@ -145,7 +151,11 @@ class TimetableApp:
         self.wait_entry = create_labeled_entry(self.tab_inställningar, "Väntetid vid slutstation (min):", train_config.get("wait_time_end_station", 5))
         # Visa intervall i minuter i entryn
         self.interval_entry = create_labeled_entry(self.tab_inställningar, "Tågintervall (min):", train_config.get("train_interval", 3600) // 60)
+        
+        # Ny entry för antal tåg i trafik (vardag)
+        self.vardag_train_amount_entry = create_labeled_entry(self.tab_inställningar, "Antal tåg i trafik (vardag):", train_config.get("vardag_train_amount", 3))
 
+        # Spara-knapp
         save_button = tk.Button(self.tab_inställningar, text="Spara inställningar", command=lambda: self.root.after(100, self._save_settings))
         save_button.pack(pady=15)
 
@@ -165,7 +175,8 @@ class TimetableApp:
                 },
                 "day_type": self.day_var.get(),
                 "wait_time_end_station": int(self.wait_entry.get()),
-                "train_interval": int(self.interval_entry.get()) * 60
+                "train_interval": int(self.interval_entry.get()) * 60,
+                "vardag_train_amount": int(self.vardag_train_amount_entry.get())
             })
 
 
@@ -178,6 +189,7 @@ class TimetableApp:
             # Visa popup först
             messagebox.showinfo("Sparat", "Inställningarna har sparats.")
 
+        # Felhantering
         except ValueError:
             messagebox.showerror("Fel", "Fel: Kontrollera att alla fält innehåller giltiga siffror.")
         except Exception as e:

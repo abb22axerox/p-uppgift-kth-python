@@ -3,8 +3,8 @@
   "retardation": 1.5,
   "max_speed": 35,
   "start_time": {
-    "hour": 5,
-    "minute": 7
+    "hour": 6,
+    "minute": 37
   },
   "day_type": "vardag",
   "stops": [
@@ -55,5 +55,6 @@
   ],
   "line_name": "Arby-K\u00e5vik",
   "wait_time_end_station": 10,
-  "train_interval": 300
+  "train_interval": 240,
+  "vardag_train_amount": 3
 }

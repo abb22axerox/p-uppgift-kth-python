@@ -1,4 +1,4 @@
-# The main program entry point
+# Huvudfilen
 
 import tkinter as tk
 from utils import file_manager as FM
